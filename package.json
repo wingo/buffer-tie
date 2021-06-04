@@ -1,0 +1,33 @@
+{
+  "name": "buffer-tie",
+  "version": "0.0.1",
+  "description": "Low-level memory mapping tricks to tie ArrayBuffer contents together",
+  "main": "buffer-tie.js",
+  "scripts": {
+    "test": "node test.js",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wingo/buffer-tie.git"
+  },
+  "keywords": [
+    "mmap",
+    "zero-copy",
+    "mmu",
+    "arraybuffer",
+    "buffer",
+    "tie",
+    "webassembly"
+  ],
+  "author": "Andy Wingo",
+  "license": "ISC",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/wingo/buffer-tie/issues"
+  },
+  "homepage": "https://github.com/wingo/buffer-tie#readme",
+  "dependencies": {
+    "bindings": "^1.5.0"
+  }
+}
