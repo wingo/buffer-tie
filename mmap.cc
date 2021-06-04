@@ -27,8 +27,8 @@ using v8::Value;
 static void
 ThrowTypeError(Isolate *isolate, const char *msg)
 {
-  isolate->ThrowException(
-    Exception::TypeError(String::NewFromUtf8(isolate, msg)));
+  MaybeLocal<String> str(String::NewFromUtf8(isolate, msg));
+  isolate->ThrowException(Exception::TypeError(str.ToLocalChecked()));
 }
 
 static std::optional<int32_t>
@@ -97,11 +97,8 @@ AddressToValue(Isolate *isolate, uintptr_t addr)
 static void OpenMemFD(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   
-  if (args.Length() != 2) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
-  }
+  if (args.Length() != 2)
+    return ThrowTypeError(isolate, "Wrong number of arguments");
 
   String::Utf8Value name(isolate, args[0]);
   auto flags = ParseInt32(isolate, args[1]);
@@ -120,11 +117,8 @@ static void OpenMemFD(const FunctionCallbackInfo<Value>& args) {
 static void Alias(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
 
-  if (args.Length() != 2) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
-  }
+  if (args.Length() != 2)
+    return ThrowTypeError(isolate, "Wrong number of arguments");
 
   auto addr = ParsePointer(isolate, args[0]);
   if (!addr) return;
@@ -139,11 +133,8 @@ static void Alias(const FunctionCallbackInfo<Value>& args) {
 static void Map(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   
-  if (args.Length() != 6) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
-  }
+  if (args.Length() != 6)
+    return ThrowTypeError(isolate, "Wrong number of arguments");
 
   auto addr = ParsePointer(isolate, args[0]);
   if (!addr) return;
@@ -171,11 +162,8 @@ static void Map(const FunctionCallbackInfo<Value>& args) {
 static void Unmap(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   
-  if (args.Length() != 2) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
-  }
+  if (args.Length() != 2)
+    return ThrowTypeError(isolate, "Wrong number of arguments");
 
   auto addr = ParsePointer(isolate, args[0]);
   if (!addr) return;
@@ -194,17 +182,11 @@ static void Unmap(const FunctionCallbackInfo<Value>& args) {
 static void BufferData(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   
-  if (args.Length() != 1) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
-  }
+  if (args.Length() != 1)
+    return ThrowTypeError(isolate, "Wrong number of arguments");
 
-  if (!args[0]->IsArrayBuffer()) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Expected an ArrayBuffer")));
-    return;
-  }
+  if (!args[0]->IsArrayBuffer())
+    return ThrowTypeError(isolate, "Expected an ArrayBuffer");
 
   void *addr = args[0].As<ArrayBuffer>()->GetContents().Data();
   args.GetReturnValue().Set(
